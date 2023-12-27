@@ -1,20 +1,16 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useRef } from 'react';
-import { cn } from './utils/cn';
-
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+import React, { useState, ChangeEvent, KeyboardEvent, useRef } from "react";
 
 const OtpInput: React.FC = () => {
-  const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
+  const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const focusInput = (index: number, moveCursorToEnd: boolean = false) => {
     const input = inputRefs.current[index];
-    if (input) {
-      input.focus();
-      if (moveCursorToEnd) {
-        input.setSelectionRange(input.value.length, input.value.length);
-      }
+
+    input?.focus();
+
+    if (moveCursorToEnd) {
+      input?.setSelectionRange(input.value.length, input.value.length);
     }
   };
 
@@ -32,17 +28,17 @@ const OtpInput: React.FC = () => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     switch (e.key) {
-      case 'Backspace':
+      case "Backspace":
         if (index > 0 && !e.currentTarget.value) {
           focusInput(index - 1, true);
         }
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         if (index > 0) {
           focusInput(index - 1, true);
         }
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         if (index < 5) {
           focusInput(index + 1);
         }
@@ -55,10 +51,10 @@ const OtpInput: React.FC = () => {
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const data = e.clipboardData
-      .getData('text')
-      .split('')
+      .getData("text")
+      .split("")
       .filter((_, index) => index < 6);
-    setOtp([...data, ...new Array(6 - data.length).fill('')]);
+    setOtp([...data, ...new Array(6 - data.length).fill("")]);
     focusInput(data.length < 6 ? data.length : 5);
   };
 
@@ -67,23 +63,19 @@ const OtpInput: React.FC = () => {
       {otp.map((data, index) => (
         <input
           key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
           type="text"
-          inputMode="numeric"
-          maxLength={1}
           value={data}
+          ref={(el) => (inputRefs.current[index] = el)}
+          inputMode="numeric"
+          autoFocus={index === 0}
+          onPaste={handlePaste}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             handleChange(e.target, index)
           }
           onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
             handleKeyDown(e, index)
           }
-          className={cn(
-            'flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-inherit placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 text-neutral-700 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50',
-            'text-center text-lg'
-          )}
-          onPaste={handlePaste}
-          autoFocus={index === 0}
+          className="text-center text-lg flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-inherit placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 text-neutral-700 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
       ))}
     </div>
