@@ -1,4 +1,4 @@
-import OtpInput from './otp-input';
+import OtpInput from "./otp-input";
 
 function App() {
   return (
