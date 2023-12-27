@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="bg-gradient-to-r pt-16 h-screen w-screen from-violet-800 to-fuchsia-900 flex flex-col text-white font-sans font-semibold text-2xl gap-4 items-center ">
-      <h4>Enter a code</h4>
+      <h4>Enter a numeric code</h4>
 
       <OtpInput ref={otpRef} onValueChange={setValue} size={size} />
 
