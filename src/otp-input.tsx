@@ -91,7 +91,7 @@ export const OtpInput = React.forwardRef<OtpInputRef, OtpInputProps>(
       [setOtp, focusInput, size]
     );
 
-    React.useEffect(clear, [size]);
+    React.useEffect(clear, [size, clear]);
     React.useImperativeHandle(ref, () => ({ clear }));
 
     return (
