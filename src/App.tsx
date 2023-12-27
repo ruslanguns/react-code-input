@@ -34,12 +34,10 @@ function App() {
         SIZE
       </h4>
 
-      {val && (
-        <h4 className="p-4 border border-solid rounded-lg text-sm font-thin flex flex-col items-center justify-center">
-          <span className="font-bold text-2xl">{val}</span>
-          VALUE
-        </h4>
-      )}
+      <h4 className="p-4 border border-solid rounded-lg text-sm font-thin flex flex-col items-center justify-center">
+        <span className="font-bold text-2xl">{val || "-"}</span>
+        VALUE
+      </h4>
     </div>
   );
 }
