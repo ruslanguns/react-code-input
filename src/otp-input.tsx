@@ -4,98 +4,95 @@ export type OtpInputRef = {
   clear: () => void;
 };
 
-type Props = {
+type OtpInputProps = {
   size?: number;
   onValueChange?: (value: string) => void;
 };
 
-export const OtpInput = React.forwardRef<OtpInputRef, Props>(
+export const OtpInput = React.forwardRef<OtpInputRef, OtpInputProps>(
   ({ size = 5, onValueChange }, ref) => {
     const [otp, setOtp] = React.useState<string[]>(new Array(size).fill(""));
     const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-    React.useEffect(() => {
+    const clear = React.useCallback(() => {
       const newVal = new Array(size).fill("");
 
       setOtp(newVal);
-
       onValueChange && onValueChange(newVal.join(""));
 
       inputRefs.current[0]?.focus();
-    }, [size]);
+    }, [inputRefs, size, onValueChange, setOtp]);
 
-    const clearInput = () => {
-      const newVal = new Array(size).fill("");
+    const focusInput = React.useCallback(
+      (index: number, moveCursorToEnd: boolean = false) => {
+        const input = inputRefs.current[index];
 
-      setOtp(newVal);
+        input?.focus();
 
-      onValueChange && onValueChange(newVal.join(""));
+        if (moveCursorToEnd) {
+          input?.setSelectionRange(input.value.length, input.value.length);
+        }
+      },
+      [inputRefs]
+    );
 
-      inputRefs.current[0]?.focus();
-    };
+    const handleChange = React.useCallback(
+      (element: HTMLInputElement, index: number) => {
+        if (isNaN(Number(element.value))) return;
 
-    const focusInput = (index: number, moveCursorToEnd: boolean = false) => {
-      const input = inputRefs.current[index];
+        const newOtp = [...otp];
+        newOtp[index] = element.value;
+        setOtp(newOtp);
 
-      input?.focus();
+        onValueChange && onValueChange(newOtp.join(""));
 
-      if (moveCursorToEnd) {
-        input?.setSelectionRange(input.value.length, input.value.length);
-      }
-    };
+        if (element.value && index < size - 1) {
+          focusInput(index + 1);
+        }
+      },
+      [otp, size, setOtp, onValueChange, focusInput]
+    );
 
-    const handleChange = (element: HTMLInputElement, index: number) => {
-      if (isNaN(Number(element.value))) return;
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+        switch (e.key) {
+          case "Backspace":
+            if (index > 0 && !e.currentTarget.value) {
+              focusInput(index - 1, true);
+            }
+            break;
+          case "ArrowLeft":
+            if (index > 0) {
+              focusInput(index - 1, true);
+            }
+            break;
+          case "ArrowRight":
+            if (index < size - 1) {
+              focusInput(index + 1);
+            }
+            break;
+          default:
+            break;
+        }
+      },
+      [focusInput, size]
+    );
 
-      const newOtp = [...otp];
-      newOtp[index] = element.value;
-      setOtp(newOtp);
+    const handlePaste = React.useCallback(
+      (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const data = e.clipboardData
+          .getData("text")
+          .split("")
+          .filter((_, index) => index < size);
+        setOtp([...data, ...new Array(size - data.length).fill("")]);
+        focusInput(data.length < size ? data.length : size - 1);
+      },
+      [setOtp, focusInput, size]
+    );
 
-      onValueChange && onValueChange(newOtp.join(""));
-
-      if (element.value && index < size - 1) {
-        focusInput(index + 1);
-      }
-    };
-
-    const handleKeyDown = (
-      e: React.KeyboardEvent<HTMLInputElement>,
-      index: number
-    ) => {
-      switch (e.key) {
-        case "Backspace":
-          if (index > 0 && !e.currentTarget.value) {
-            focusInput(index - 1, true);
-          }
-          break;
-        case "ArrowLeft":
-          if (index > 0) {
-            focusInput(index - 1, true);
-          }
-          break;
-        case "ArrowRight":
-          if (index < size - 1) {
-            focusInput(index + 1);
-          }
-          break;
-        default:
-          break;
-      }
-    };
-
-    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      const data = e.clipboardData
-        .getData("text")
-        .split("")
-        .filter((_, index) => index < size);
-      setOtp([...data, ...new Array(size - data.length).fill("")]);
-      focusInput(data.length < size ? data.length : size - 1);
-    };
-
-    React.useImperativeHandle(ref, () => ({
-      clear: clearInput,
-    }));
+    React.useEffect(clear, [size]);
+    React.useImperativeHandle(ref, () => ({ clear }));
 
     return (
       <div

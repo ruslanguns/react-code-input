@@ -1,5 +1,5 @@
 import React from "react";
-import { OtpInput, OtpInputRef } from "./otp-input";
+import { OtpInput, type OtpInputRef } from "./otp-input";
 import { Slider } from "./slider";
 
 function App() {
