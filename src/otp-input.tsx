@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export type OtpInputRef = {
   clear: () => void;
@@ -13,6 +13,16 @@ export const OtpInput = React.forwardRef<OtpInputRef, Props>(
   ({ size = 5, onValueChange }, ref) => {
     const [otp, setOtp] = React.useState<string[]>(new Array(size).fill(""));
     const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+
+    React.useEffect(() => {
+      const newVal = new Array(size).fill("");
+
+      setOtp(newVal);
+
+      onValueChange && onValueChange(newVal.join(""));
+
+      inputRefs.current[0]?.focus();
+    }, [size]);
 
     const clearInput = () => {
       const newVal = new Array(size).fill("");
