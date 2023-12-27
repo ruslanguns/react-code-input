@@ -17,6 +17,10 @@ function App() {
 
       <OtpInput ref={otpRef} onValueChange={setValue} size={size} />
 
+      <button onClick={onClear} className="text-sm hover:underline font-light">
+        Clear
+      </button>
+
       <Slider
         defaultValue={[5]}
         max={10}
@@ -30,15 +34,11 @@ function App() {
         SIZE
       </h4>
 
-      {val && <div className="mt-10">{val}</div>}
-
       {val && (
-        <button
-          onClick={onClear}
-          className="text-sm hover:underline font-light"
-        >
-          Clear
-        </button>
+        <h4 className="p-4 border border-solid rounded-lg text-sm font-thin flex flex-col items-center justify-center">
+          <span className="font-bold text-2xl">{val}</span>
+          VALUE
+        </h4>
       )}
     </div>
   );
